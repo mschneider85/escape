@@ -632,7 +632,7 @@
                   options: [{ art: 'sp_planet_blue', label: 'Blauer Planet' }, { art: 'sp_planet_red', label: 'Roter Planet' }, { art: 'sp_planet_green', label: 'Grüner Planet' }, { art: 'sp_planet_ring', label: 'Ringplanet' }],
                   answer: [1, 3, 0] },
                 become: 'sp_radio_on', okText: 'Knister, knister … „Hier ist die Erde! Der Code für die Luftschleuse ist 3 – 1 – 4. Gute Heimreise!“',
-                note: 'Funkspruch der Erde: Schleusen-Code 3 – 1 – 4.', doneText: 'Das Funkgerät rauscht leise.' },
+                note: 'Funkspruch der Erde: Schleusen-Code 3 – 1 – 4.', doneText: 'Das Funkgerät rauscht leise. Die Erde hat gefunkt: Der Code für die Luftschleuse ist 3 – 1 – 4.' },
               { id: 'zurschleuse', art: 'nav_right', x: 92, y: 89, w: 9, name: 'Zur Luftschleuse', goto: 'schleuse' },
             ],
           },
