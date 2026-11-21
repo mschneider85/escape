@@ -1,9 +1,9 @@
 /* ===================== Welt: Weltraum ===================== */
 (() => {
   const F = draw.face;
-  const eyes = (cx, cy, s = 1, gap = 5) => `
+  const eyes = (cx, cy, s = 1, gap = 5) => `<g class="eye">
     <circle cx="${cx - gap * s}" cy="${cy}" r="${2 * s}" fill="#3b2c24"/><circle cx="${cx + gap * s}" cy="${cy}" r="${2 * s}" fill="#3b2c24"/>
-    <circle cx="${cx - gap * s + .7 * s}" cy="${cy - .8 * s}" r="${.7 * s}" fill="#fff"/><circle cx="${cx + gap * s + .7 * s}" cy="${cy - .8 * s}" r="${.7 * s}" fill="#fff"/>`;
+    <circle cx="${cx - gap * s + .7 * s}" cy="${cy - .8 * s}" r="${.7 * s}" fill="#fff"/><circle cx="${cx + gap * s + .7 * s}" cy="${cy - .8 * s}" r="${.7 * s}" fill="#fff"/></g>`;
   const cheeks = (cx, cy, s = 1, gap = 8) => `
     <ellipse cx="${cx - gap * s}" cy="${cy}" rx="${2.6 * s}" ry="${1.6 * s}" fill="#f4a6a0" opacity=".85"/>
     <ellipse cx="${cx + gap * s}" cy="${cy}" rx="${2.6 * s}" ry="${1.6 * s}" fill="#f4a6a0" opacity=".85"/>`;
@@ -114,8 +114,8 @@
       <circle class="o" cx="50" cy="6" r="5" fill="#d9573b"/>
       <path class="o" fill="#e8ecf4" d="M18 52 Q16 22 50 22 Q84 22 82 52 L82 58 L18 58Z"/>
       <rect class="o" x="26" y="32" width="48" height="22" rx="10" fill="#2a2f45"/>
-      <ellipse cx="40" cy="43" rx="5" ry="6" fill="#7fe0d0"/><ellipse cx="60" cy="43" rx="5" ry="6" fill="#7fe0d0"/>
-      <circle cx="41.5" cy="41" r="1.6" fill="#fff"/><circle cx="61.5" cy="41" r="1.6" fill="#fff"/>
+      <g class="eye"><ellipse cx="40" cy="43" rx="5" ry="6" fill="#7fe0d0"/><ellipse cx="60" cy="43" rx="5" ry="6" fill="#7fe0d0"/>
+      <circle cx="41.5" cy="41" r="1.6" fill="#fff"/><circle cx="61.5" cy="41" r="1.6" fill="#fff"/></g>
       <ellipse cx="30" cy="52" rx="3" ry="1.8" fill="#f4a6a0"/><ellipse cx="70" cy="52" rx="3" ry="1.8" fill="#f4a6a0"/>
       <path class="o" fill="#c9d1e3" d="M22 58 L78 58 L74 104 L26 104Z"/>
       <rect class="o" x="38" y="68" width="24" height="16" rx="4" fill="#f2c94c"/>
@@ -470,9 +470,9 @@
       <path class="thick line" d="M38 34 Q30 14 22 10 M72 34 Q80 14 88 10"/>
       <circle class="o" cx="22" cy="10" r="6" fill="#f2c94c"/><circle class="o" cx="88" cy="10" r="6" fill="#f2c94c"/>
       <path class="o" fill="#7fd6c4" d="M14 120 Q6 60 30 40 Q55 22 80 40 Q104 60 96 120 Q55 134 14 120Z"/>
-      <circle class="o" cx="38" cy="64" r="9" fill="#fff"/><circle class="o" cx="55" cy="56" r="10" fill="#fff"/><circle class="o" cx="72" cy="64" r="9" fill="#fff"/>
+      <g class="eye"><circle class="o" cx="38" cy="64" r="9" fill="#fff"/><circle class="o" cx="55" cy="56" r="10" fill="#fff"/><circle class="o" cx="72" cy="64" r="9" fill="#fff"/>
       <circle cx="39" cy="65" r="4" fill="#3b2c24"/><circle cx="56" cy="57" r="4.5" fill="#3b2c24"/><circle cx="73" cy="65" r="4" fill="#3b2c24"/>
-      <circle cx="40.5" cy="63.5" r="1.3" fill="#fff"/><circle cx="57.5" cy="55.5" r="1.5" fill="#fff"/><circle cx="74.5" cy="63.5" r="1.3" fill="#fff"/>
+      <circle cx="40.5" cy="63.5" r="1.3" fill="#fff"/><circle cx="57.5" cy="55.5" r="1.5" fill="#fff"/><circle cx="74.5" cy="63.5" r="1.3" fill="#fff"/></g>
       ${cheeks(55, 82, 1.1, 22)}
       <path class="thin" d="M44 84 Q55 96 66 84"/>
       <path class="o" fill="#7fd6c4" d="M16 86 Q2 92 6 104 Q14 100 18 98Z M94 86 Q108 92 104 104 Q96 100 92 98Z"/>
@@ -582,6 +582,7 @@
           kabine: {
             name: 'Meine Kabine',
             bg: 'sp_bg_kabine',
+            fx: 'stars',
             objects: [
               { id: 'pip', art: 'sp_robot', x: 50, y: 69, w: 12, name: 'Roboter Pip',
                 say: 'Piep! Ich bin Pip. Der Strom ist weg! Im Lager links liegt eine Ersatz-Sicherung. Aber dort ist es stockdunkel.',
@@ -686,6 +687,7 @@
           basis: {
             name: 'Die Mondbasis',
             bg: 'sp_bg_basis',
+            fx: 'stars',
             objects: [
               { id: 'hoppel', art: 'sp_moonbunny', x: 50, y: 71, w: 12, name: 'Mondhase Hoppel',
                 say: 'Hoppel mümmelt: „Das Rad vom Mondauto ist in den Krater gerollt! Mein Schrank hat Werkzeug. Der Code: Mondsteine im Krater, dann helle Sterne im Fenster der Sternwarte.“',
@@ -701,6 +703,7 @@
           krater: {
             name: 'Der Krater',
             bg: 'sp_bg_krater',
+            fx: 'stars',
             back: 'basis',
             enter: 'Du hüpfst ganz leicht über den Mond. Hui! Vor dir ist ein riesiger Krater.',
             objects: [
@@ -715,6 +718,7 @@
           sternwarte: {
             name: 'Die Sternwarte',
             bg: 'sp_bg_sternwarte',
+            fx: 'stars',
             back: 'basis',
             enter: 'In der Sternwarte steht ein großes Fernrohr. Durchs Dachfenster siehst du helle Sterne.',
             objects: [
@@ -773,6 +777,7 @@
           landeplatz: {
             name: 'Der Landeplatz',
             bg: 'sp_bg_landeplatz',
+            fx: 'bubbles',
             objects: [
               { id: 'rakete', art: 'sp_rocket_broken', x: 50, y: 52, w: 14, name: 'Rakete',
                 needs: ['antenne', 'kristall'], needText: 'Die Rakete ist kaputt: Die Antenne ist abgebrochen und der Energiekristall ist leer.',
@@ -786,6 +791,7 @@
           dorf: {
             name: 'Das Blubbi-Dorf',
             bg: 'sp_bg_dorf',
+            fx: 'bubbles',
             back: 'landeplatz',
             enter: 'Im Dorf wohnen die Blubbis. Sie sind sehr freundlich!',
             objects: [
@@ -805,6 +811,7 @@
           hoehle: {
             name: 'Die Glitzerhöhle',
             bg: 'sp_bg_hoehle',
+            fx: 'glitter',
             back: 'landeplatz',
             dark: true,
             enter: 'In der Höhle ist es dunkel. Nur ein Pilz leuchtet ein bisschen.',
@@ -822,6 +829,7 @@
           saal: {
             name: 'Der Kristallsaal',
             bg: 'sp_bg_kristallsaal',
+            fx: 'glitter',
             back: 'hoehle',
             enter: 'Wow! Ein ganzer Saal voller Kristalle.',
             objects: [

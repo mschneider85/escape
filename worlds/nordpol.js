@@ -1,9 +1,9 @@
 /* ===================== Welt: Nordpol ===================== */
 (() => {
   const F = draw.face;
-  const eyes = (cx, cy, s = 1, gap = 5) => `
+  const eyes = (cx, cy, s = 1, gap = 5) => `<g class="eye">
     <circle cx="${cx - gap * s}" cy="${cy}" r="${2 * s}" fill="#3b2c24"/><circle cx="${cx + gap * s}" cy="${cy}" r="${2 * s}" fill="#3b2c24"/>
-    <circle cx="${cx - gap * s + .7 * s}" cy="${cy - .8 * s}" r="${.7 * s}" fill="#fff"/><circle cx="${cx + gap * s + .7 * s}" cy="${cy - .8 * s}" r="${.7 * s}" fill="#fff"/>`;
+    <circle cx="${cx - gap * s + .7 * s}" cy="${cy - .8 * s}" r="${.7 * s}" fill="#fff"/><circle cx="${cx + gap * s + .7 * s}" cy="${cy - .8 * s}" r="${.7 * s}" fill="#fff"/></g>`;
   const cheeks = (cx, cy, s = 1, gap = 8) => `
     <ellipse cx="${cx - gap * s}" cy="${cy}" rx="${2.6 * s}" ry="${1.6 * s}" fill="#f4a6a0" opacity=".85"/>
     <ellipse cx="${cx + gap * s}" cy="${cy}" rx="${2.6 * s}" ry="${1.6 * s}" fill="#f4a6a0" opacity=".85"/>`;
@@ -571,6 +571,7 @@
           iglu: {
             name: 'Im Iglu',
             bg: 'bg_iglu',
+            fx: 'warm',
             objects: [
               { id: 'lampe', art: 'oil_lamp', x: 50, y: 14, w: 6, static: true },
               { id: 'fenster', art: 'iglu_window', x: 50, y: 37, w: 15, name: 'Fenster', goto: 'fenster' },
@@ -604,6 +605,7 @@
           fenster: {
             name: 'Blick aus dem Fenster',
             bg: 'bg_icesea',
+            fx: 'snow',
             back: 'iglu',
             enter: 'Draußen auf dem Eismeer ist ganz schön was los!',
             objects: [
@@ -646,6 +648,7 @@
           stall: {
             name: 'Im Stall',
             bg: 'bg_stable',
+            fx: 'dust',
             objects: [
               { id: 'laterne', art: 'lantern_hanging', x: 24, y: 16, w: 6, static: true },
               { id: 'leiter', art: 'ladder', x: 90, y: 42, w: 8, name: 'Leiter zum Heuboden', goto: 'heuboden' },
@@ -661,6 +664,7 @@
           heuboden: {
             name: 'Der Heuboden',
             bg: 'bg_hayloft',
+            fx: 'dust',
             back: 'stall',
             enter: 'Oben auf dem Heuboden riecht es nach Sommer.',
             objects: [
@@ -681,6 +685,7 @@
           werkbank: {
             name: 'Die Werkbank',
             bg: 'bg_workbench',
+            fx: 'dust',
             back: 'stall',
             objects: [
               { id: 'zettel', art: 'note', x: 82, y: 33, w: 11, name: 'Zettel', rot: 6,
@@ -722,6 +727,7 @@
           thron: {
             name: 'Der Thronsaal',
             bg: 'bg_throne',
+            fx: 'glitter',
             objects: [
               { id: 'prinzessin', art: 'princess', x: 50, y: 59, w: 19, name: 'Prinzessin Flocke',
                 needs: ['krone', 'zauberstab'], needText: 'Prinzessin Flocke schnieft: „Bitte finde meine Krone und meinen Zauberstab! Sie sind irgendwo im Palast.“', win: true },
@@ -738,6 +744,7 @@
           gang: {
             name: 'Der Spiegelgang',
             bg: 'bg_mirrors',
+            fx: 'glitter',
             back: 'thron',
             enter: 'Im Spiegelgang stehen drei Eisfiguren auf Sockeln.',
             objects: [
@@ -758,6 +765,7 @@
           balkon: {
             name: 'Der Balkon',
             bg: 'bg_balcony',
+            fx: 'snow',
             back: 'thron',
             enter: 'Wie schön! Über dem Palast tanzt das Nordlicht.',
             objects: [
@@ -771,6 +779,7 @@
           schatz: {
             name: 'Die Schatzkammer',
             bg: 'bg_treasury',
+            fx: 'glitter',
             back: 'gang',
             enter: 'Wow, die Schatzkammer! Überall glitzert es.',
             objects: [

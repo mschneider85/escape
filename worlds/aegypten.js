@@ -1,8 +1,8 @@
 /* ===================== Welt: Ägypten ===================== */
 (() => {
-  const eyes = (cx, cy, s = 1, gap = 5) => `
+  const eyes = (cx, cy, s = 1, gap = 5) => `<g class="eye">
     <circle cx="${cx - gap * s}" cy="${cy}" r="${2 * s}" fill="#3b2c24"/><circle cx="${cx + gap * s}" cy="${cy}" r="${2 * s}" fill="#3b2c24"/>
-    <circle cx="${cx - gap * s + .7 * s}" cy="${cy - .8 * s}" r="${.7 * s}" fill="#fff"/><circle cx="${cx + gap * s + .7 * s}" cy="${cy - .8 * s}" r="${.7 * s}" fill="#fff"/>`;
+    <circle cx="${cx - gap * s + .7 * s}" cy="${cy - .8 * s}" r="${.7 * s}" fill="#fff"/><circle cx="${cx + gap * s + .7 * s}" cy="${cy - .8 * s}" r="${.7 * s}" fill="#fff"/></g>`;
   const cheeks = (cx, cy, s = 1, gap = 8) => `
     <ellipse cx="${cx - gap * s}" cy="${cy}" rx="${2.6 * s}" ry="${1.6 * s}" fill="#f4a6a0" opacity=".85"/>
     <ellipse cx="${cx + gap * s}" cy="${cy}" rx="${2.6 * s}" ry="${1.6 * s}" fill="#f4a6a0" opacity=".85"/>`;
@@ -225,7 +225,7 @@
       <path class="thin" d="M114 66 l3 4 l3 -4 l3 4 l3 -4 l3 4 l3 -4 l3 4"/>
       <path class="o" fill="#7fb069" d="M30 80 Q8 84 4 70 Q14 74 26 70Z"/>
       ${[56, 72, 88].map((x) => `<path class="o" fill="#6a9a58" d="M${x - 6} 46 L${x} 36 L${x + 6} 46Z"/>`).join('')}
-      <circle class="o" cx="104" cy="44" r="9" fill="#fff"/><circle cx="106" cy="44" r="4" fill="#3b2c24"/><circle cx="107.5" cy="42.5" r="1.3" fill="#fff"/>
+      <g class="eye"><circle class="o" cx="104" cy="44" r="9" fill="#fff"/><circle cx="106" cy="44" r="4" fill="#3b2c24"/><circle cx="107.5" cy="42.5" r="1.3" fill="#fff"/></g>
       <ellipse cx="96" cy="58" rx="4" ry="2.4" fill="#f4a6a0" opacity=".9"/>
       <path class="o" fill="#7fb069" d="M46 92 L52 106 L62 106 L60 94Z M84 92 L88 106 L98 106 L96 92Z"/>
       <path class="o" fill="#f2b544" d="M40 60 Q50 54 60 60 Q50 66 40 60Z" opacity=".9"/>` },
@@ -419,6 +419,7 @@
           gang: {
             name: 'Der dunkle Gang',
             bg: 'eg_bg_gang',
+            fx: 'dust',
             dark: true,
             objects: [
               { id: 'lampe', art: 'eg_lamp', x: 14, y: 46, w: 10, name: 'Öllampe', glow: true,
@@ -438,6 +439,7 @@
           kammer: {
             name: 'Die Königskammer',
             bg: 'eg_bg_kammer',
+            fx: 'dust',
             back: 'gang',
             enter: 'Eine große Kammer mit bunten Säulen. Hier sitzt jemand!',
             objects: [
@@ -497,6 +499,7 @@
           vorraum: {
             name: 'Der Vorraum',
             bg: 'eg_bg_vorraum',
+            fx: 'dust',
             objects: [
               { id: 'bild', art: 'eg_painting', x: 30, y: 36, w: 15, name: 'Bild vom Fluss', goto: 'nilbild' },
               { id: 'korb', art: 'eg_basket', x: 22, y: 80, w: 15, name: 'Korb',
@@ -523,6 +526,7 @@
           grabkammer: {
             name: 'Die Grabkammer',
             bg: 'eg_bg_grab',
+            fx: 'stars',
             back: 'vorraum',
             enter: 'Die Decke ist voller goldener Sterne. In der Mitte steht der Sarkophag der Pharaonin.',
             objects: [
@@ -539,6 +543,7 @@
           waage: {
             name: 'Die goldene Waage',
             bg: 'eg_bg_waage',
+            fx: 'dust',
             back: 'grabkammer',
             enter: 'Eine goldene Waage. Daneben liegen eine Feder, ein Brot und ein Stein.',
             objects: [
@@ -582,6 +587,7 @@
           wueste: {
             name: 'Die Wüste',
             bg: 'eg_bg_wueste',
+            fx: 'heat',
             objects: [
               { id: 'pyr1', art: 'eg_pyramid', x: 16, y: 46, w: 18, static: true },
               { id: 'pyr2', art: 'eg_pyramid', x: 36, y: 50, w: 12, static: true },
@@ -603,6 +609,7 @@
           oase: {
             name: 'Die Oase',
             bg: 'eg_bg_oase',
+            fx: 'heat',
             back: 'wueste',
             enter: 'Eine Oase! Hier gibt es Wasser und hohe Palmen.',
             objects: [
@@ -617,6 +624,7 @@
           zelt: {
             name: 'Das Händlerzelt',
             bg: 'eg_bg_zelt',
+            fx: 'dust',
             back: 'wueste',
             enter: 'Im bunten Zelt sitzt die Händlerin Amira zwischen Teppichen und Töpfen.',
             objects: [

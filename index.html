@@ -74,6 +74,7 @@
       <p class="cover-sub">Ein Rätselbuch zum Entkommen</p>
       <div id="world-list" class="world-list"></div>
       <div class="cover-foot">
+        <button id="btn-music" class="chip" type="button"></button>
         <button id="btn-sound" class="chip" type="button"></button>
         <button id="btn-voice" class="chip" type="button"></button>
         <button id="btn-reset" class="chip ghost" type="button">Alles neu</button>
@@ -104,6 +105,7 @@
         <div id="scene" class="scene">
           <div id="scene-bg" class="scene-bg"></div>
           <div id="objects" class="objects"></div>
+          <div id="fx" class="fx" aria-hidden="true"></div>
           <div id="darkness" class="darkness"></div>
           <div class="paper-grain"></div>
           <div id="page-label" class="page-label"></div>
@@ -159,6 +161,7 @@
   <script src="worlds/nordpol.js"></script>
   <script src="worlds/aegypten.js"></script>
   <script src="worlds/weltraum.js"></script>
+  <script src="engine/music.js"></script>
   <script src="engine/game.js"></script>
 </body>
 </html>

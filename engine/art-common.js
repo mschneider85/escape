@@ -39,8 +39,8 @@ const draw = {
         : `<path class="thin" d="M${cx - 4 * s} ${cy + 6 * s} q${4 * s} ${5 * s} ${8 * s} 0"/>`;
     const eyes = mood === 'sleep'
       ? `<path class="thin" d="M${cx - e - 2 * s} ${cy} q${2 * s} ${2 * s} ${4 * s} 0 M${cx + e - 2 * s} ${cy} q${2 * s} ${2 * s} ${4 * s} 0"/>`
-      : `<circle cx="${cx - e}" cy="${cy}" r="${1.9 * s}" fill="#3b2c24"/><circle cx="${cx + e}" cy="${cy}" r="${1.9 * s}" fill="#3b2c24"/>
-         <circle cx="${cx - e + .6 * s}" cy="${cy - .7 * s}" r="${.6 * s}" fill="#fff"/><circle cx="${cx + e + .6 * s}" cy="${cy - .7 * s}" r="${.6 * s}" fill="#fff"/>`;
+      : `<g class="eye"><circle cx="${cx - e}" cy="${cy}" r="${1.9 * s}" fill="#3b2c24"/><circle cx="${cx + e}" cy="${cy}" r="${1.9 * s}" fill="#3b2c24"/>
+         <circle cx="${cx - e + .6 * s}" cy="${cy - .7 * s}" r="${.6 * s}" fill="#fff"/><circle cx="${cx + e + .6 * s}" cy="${cy - .7 * s}" r="${.6 * s}" fill="#fff"/></g>`;
     return `${eyes}
       <ellipse cx="${cx - e - 3 * s}" cy="${cy + 4.5 * s}" rx="${2.6 * s}" ry="${1.6 * s}" fill="#f4a6a0" opacity=".8"/>
       <ellipse cx="${cx + e + 3 * s}" cy="${cy + 4.5 * s}" rx="${2.6 * s}" ry="${1.6 * s}" fill="#f4a6a0" opacity=".8"/>

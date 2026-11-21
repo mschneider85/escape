@@ -21,7 +21,7 @@
 
   // ---------- Speichern ----------
   const save = (() => {
-    let data = { done: {}, progress: {}, sound: true, voice: false };
+    let data = { done: {}, progress: {}, sound: true, voice: false, music: true };
     try {
       const raw = localStorage.getItem(STORE_KEY);
       if (raw) data = Object.assign(data, JSON.parse(raw));
@@ -94,6 +94,17 @@
     page: swish,
   };
 
+  // ---------- Musik ----------
+  const music = createMusic(ctx);
+  music.setEnabled(save.data.music);
+  // iOS erlaubt Ton erst nach einer Berührung
+  document.addEventListener('pointerdown', () => music.kick(), true);
+  document.addEventListener('visibilitychange', () => {
+    if (!audioCtx) return;
+    if (document.hidden) audioCtx.suspend().catch(() => {});
+    else audioCtx.resume().catch(() => {});
+  });
+
   // ---------- Vorlesen ----------
   let germanVoice = null;
   function pickVoice() {
@@ -152,6 +163,8 @@
       b.addEventListener('click', () => { sfx.page(); openWorld(w); });
       list.appendChild(b);
     });
+    music.want('home');
+    $('#btn-music').textContent = save.data.music ? 'Musik: an' : 'Musik: aus';
     $('#btn-sound').textContent = save.data.sound ? 'Töne: an' : 'Töne: aus';
     $('#btn-voice').textContent = save.data.voice ? 'Vorlesen: an' : 'Vorlesen: aus';
   }
@@ -167,6 +180,7 @@
 
   function openWorld(w) {
     currentWorld = w;
+    music.want(w.id);
     $('#world-title').textContent = w.name;
     const list = $('#adventure-list');
     list.innerHTML = '';
@@ -229,6 +243,8 @@
 
   function startAdventure(adv) {
     currentAdv = adv;
+    if (!currentWorld || !currentWorld.adventures.includes(adv)) currentWorld = WORLDS.find((w) => w.adventures.includes(adv));
+    music.want(currentWorld.id);
     clearTimeout(winTimer);
     closePuzzle();
     selected = null;
@@ -287,6 +303,10 @@
       if (o.z) el.style.zIndex = o.z;
       if (o.rot) el.style.rotate = o.rot + 'deg';
       el.innerHTML = art(state.become[o.id] || o.art);
+      if (el.querySelector('.eye')) {
+        el.classList.add('alive');
+        el.style.setProperty('--breathe-delay', (-Math.random() * 4).toFixed(2) + 's');
+      }
       if (o.name) el.setAttribute('aria-label', o.name);
       if ((o.hidden && !has('revealed', o.id)) || has('hidden', o.id)) el.hidden = true;
       if (!o.static) {
@@ -298,6 +318,8 @@
       objLayer.appendChild(el);
       objEls.set(o.id, el);
     });
+
+    renderFx(page.fx);
 
     // Dunkelheit
     const dark = page.dark && !has('lit', state.page);
@@ -315,6 +337,40 @@
     if (announce && !has('visited', state.page) && page.enter) say(page.enter);
     add('visited', state.page);
   }
+
+  // ---------- Stimmungs-Effekte (Schnee, Staub, Glitzer, Sterne, Blasen) ----------
+  const FX_COUNT = { snow: 42, dust: 18, glitter: 16, stars: 22, bubbles: 14, warm: 12, heat: 16 };
+  function renderFx(kind) {
+    const box = $('#fx');
+    box.innerHTML = '';
+    box.className = 'fx' + (kind ? ' fx-' + kind : '');
+    if (!kind || !FX_COUNT[kind]) return;
+    const r = (a, b) => a + Math.random() * (b - a);
+    const colors = ['#ff9fb2', '#9fd8ff', '#c9a4ff', '#ffd36b', '#9ff0c8'];
+    let html = '';
+    for (let i = 0; i < FX_COUNT[kind]; i++) {
+      const size = kind === 'bubbles' ? r(2, 5) : kind === 'snow' ? r(.5, 1.3) : kind === 'glitter' ? r(1.2, 2.6) : kind === 'stars' ? r(.8, 1.8) : r(.35, .9);
+      const top = kind === 'stars' ? r(2, 55) : kind === 'snow' ? -5 : r(5, 95);
+      const style = [
+        `left:${r(0, 100).toFixed(1)}%`, `top:${top.toFixed(1)}%`,
+        `--s:${size.toFixed(2)}`, `--dur:${r(kind === 'snow' ? 7 : 3, kind === 'snow' ? 14 : 9).toFixed(1)}s`,
+        `--delay:${(-r(0, 14)).toFixed(1)}s`, `--dx:${r(-6, 6).toFixed(1)}`,
+        kind === 'bubbles' ? `--c:${colors[i % colors.length]}` : '',
+      ].join(';');
+      html += `<i style="${style}"></i>`;
+    }
+    box.innerHTML = html;
+  }
+
+  // Zufällig blinzeln – immer nur kurz eine Figur, spart Akku
+  setInterval(() => {
+    if (!$('#screen-game').classList.contains('active') || document.hidden) return;
+    const alive = [...objLayer.querySelectorAll('.obj.alive:not([hidden])')];
+    if (!alive.length) return;
+    const el = alive[Math.floor(Math.random() * alive.length)];
+    el.classList.add('blink');
+    setTimeout(() => el.classList.remove('blink'), 260);
+  }, 1700);
 
   function say(text, autoSpeak = true) {
     $('#bubble-text').textContent = text;
@@ -801,6 +857,12 @@
     });
   });
 
+  $('#btn-music').addEventListener('click', () => {
+    save.data.music = !save.data.music;
+    save.write();
+    music.setEnabled(save.data.music);
+    renderHome();
+  });
   $('#btn-sound').addEventListener('click', () => {
     save.data.sound = !save.data.sound;
     save.write();
@@ -841,7 +903,7 @@
   document.addEventListener('dblclick', (e) => e.preventDefault());
 
   // Für Tests
-  window.__escape = { get state() { return state; }, startAdventure, goto, allObjects, findObj };
+  window.__escape = { get state() { return state; }, startAdventure, goto, allObjects, findObj, music, get audio() { return audioCtx; } };
 
   renderHome();
 

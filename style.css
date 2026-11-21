@@ -285,6 +285,67 @@ svg.art .rough-bg { filter: url(#rough-bg); }
 .darkness.fade { opacity: 0; pointer-events: none; }
 .darkness.instant { transition: none; }
 
+/* ---------- Leben: Atmen & Blinzeln ---------- */
+.obj.alive > svg.art { transform-origin: 50% 100%; animation: breathe 3.8s ease-in-out infinite; animation-delay: var(--breathe-delay, 0s); }
+.obj .eye { transform-box: fill-box; transform-origin: center; }
+.obj.blink .eye { animation: blink .26s ease-in-out; }
+@keyframes breathe { 0%, 100% { transform: scale(1, 1); } 50% { transform: scale(1.012, 1.03); } }
+@keyframes blink { 0%, 100% { transform: scaleY(1); } 45%, 60% { transform: scaleY(.1); } }
+
+/* ---------- Stimmungs-Effekte ---------- */
+.fx { position: absolute; inset: 0; z-index: 4; pointer-events: none; overflow: hidden; }
+.fx i {
+  position: absolute;
+  width: calc(var(--s) * var(--u)); height: calc(var(--s) * var(--u));
+  border-radius: 50%;
+  animation: var(--anim) var(--dur) linear infinite;
+  animation-delay: var(--delay);
+}
+.fx-snow i { --anim: fx-snow; background: #fff; box-shadow: 0 0 calc(.4 * var(--u)) rgba(255,255,255,.8); opacity: .9; }
+.fx-dust i, .fx-warm i { --anim: fx-float; background: #fff1c4; box-shadow: 0 0 calc(.8 * var(--u)) #ffd77a; opacity: 0; animation-timing-function: ease-in-out; }
+.fx-warm i { background: #fff; }
+.fx-heat i { --anim: fx-drift; background: #f7d8a0; opacity: 0; width: calc(var(--s) * 1.6 * var(--u)); border-radius: 40%; }
+.fx-stars i, .fx-glitter i {
+  --anim: fx-twinkle;
+  border-radius: 0;
+  background: #fff8d6;
+  clip-path: polygon(50% 0, 62% 38%, 100% 50%, 62% 62%, 50% 100%, 38% 62%, 0 50%, 38% 38%);
+  filter: drop-shadow(0 0 calc(.6 * var(--u)) #ffe9a6);
+  animation-timing-function: ease-in-out;
+}
+.fx-glitter i { background: #e6fbff; filter: drop-shadow(0 0 calc(.6 * var(--u)) #bfefff); }
+.fx-bubbles i {
+  --anim: fx-bubble;
+  background: radial-gradient(circle at 35% 30%, rgba(255,255,255,.9) 0 18%, transparent 22%), var(--c);
+  opacity: 0;
+  border: 1.5px solid rgba(59,44,36,.35);
+  animation-timing-function: ease-in-out;
+}
+@keyframes fx-snow {
+  0% { transform: translate(0, 0); }
+  50% { transform: translate(calc(var(--dx) * var(--u)), calc(55 * var(--u))); }
+  100% { transform: translate(calc(var(--dx) * -.5 * var(--u)), calc(80 * var(--u))); }
+}
+@keyframes fx-float {
+  0%, 100% { transform: translate(0, 0); opacity: 0; }
+  30%, 70% { opacity: .8; }
+  50% { transform: translate(calc(var(--dx) * var(--u)), calc(-6 * var(--u))); }
+}
+@keyframes fx-drift {
+  0% { transform: translate(0, 0); opacity: 0; }
+  20%, 80% { opacity: .7; }
+  100% { transform: translate(calc(14 * var(--u)), calc(var(--dx) * .3 * var(--u))); opacity: 0; }
+}
+@keyframes fx-twinkle {
+  0%, 100% { transform: scale(.2) rotate(0); opacity: 0; }
+  50% { transform: scale(1) rotate(45deg); opacity: 1; }
+}
+@keyframes fx-bubble {
+  0% { transform: translate(0, calc(10 * var(--u))) scale(.6); opacity: 0; }
+  20%, 80% { opacity: .75; }
+  100% { transform: translate(calc(var(--dx) * var(--u)), calc(-30 * var(--u))) scale(1); opacity: 0; }
+}
+
 /* Papierstruktur über allem – macht Farben "aquarellig" */
 .paper-grain {
   position: absolute; inset: 0;
