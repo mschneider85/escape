@@ -4,8 +4,8 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
   <title>Escape-Welten</title>
-  <meta name="description" content="Ein Escape-Spiel mit Rätseln für Kinder: Nordpol, Ägypten und Waldraum.">
-  <meta name="theme-color" content="#1d2b53">
+  <meta name="description" content="Ein Escape-Buch zum Spielen: Rätsel für Kinder am Nordpol, in Ägypten und im Weltraum.">
+  <meta name="theme-color" content="#2a1f3d">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -14,82 +14,151 @@
   <link rel="manifest" href="manifest.webmanifest">
   <link rel="icon" href="icons/icon.svg" type="image/svg+xml">
   <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+  <link rel="preload" href="fonts/patrick-hand.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <!-- Startbildschirm -->
+  <!-- Zeichen-Filter: machen alle Linien leicht wackelig wie mit der Hand gezeichnet -->
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+    <defs>
+      <filter id="rough" x="-10%" y="-10%" width="120%" height="120%">
+        <feTurbulence type="fractalNoise" baseFrequency="0.035" numOctaves="2" seed="3" result="n"/>
+        <feDisplacementMap in="SourceGraphic" in2="n" scale="2.6" xChannelSelector="R" yChannelSelector="G"/>
+      </filter>
+      <filter id="rough-bg" x="-2%" y="-2%" width="104%" height="104%">
+        <feTurbulence type="fractalNoise" baseFrequency="0.006" numOctaves="2" seed="7" result="n"/>
+        <feDisplacementMap in="SourceGraphic" in2="n" scale="9" xChannelSelector="R" yChannelSelector="G"/>
+      </filter>
+      <pattern id="hatch" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(40)">
+        <line x1="0" y1="0" x2="0" y2="6" stroke="#3b2c24" stroke-width="1" opacity=".22"/>
+      </pattern>
+      <pattern id="hatch-bg" width="16" height="16" patternUnits="userSpaceOnUse" patternTransform="rotate(40)">
+        <line x1="0" y1="0" x2="0" y2="16" stroke="#3b2c24" stroke-width="2" opacity=".14"/>
+      </pattern>
+      <radialGradient id="glow-warm">
+        <stop offset="0" stop-color="#fff2c2" stop-opacity=".9"/>
+        <stop offset="1" stop-color="#ffd27a" stop-opacity="0"/>
+      </radialGradient>
+      <radialGradient id="glow-cool">
+        <stop offset="0" stop-color="#e8fbff" stop-opacity=".9"/>
+        <stop offset="1" stop-color="#9fe3ff" stop-opacity="0"/>
+      </radialGradient>
+      <linearGradient id="sky-night" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0" stop-color="#1c1840"/>
+        <stop offset=".6" stop-color="#3a3170"/>
+        <stop offset="1" stop-color="#6b5aa0"/>
+      </linearGradient>
+      <linearGradient id="sky-day" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0" stop-color="#a9d6f0"/>
+        <stop offset="1" stop-color="#eaf6fb"/>
+      </linearGradient>
+      <linearGradient id="sky-desert" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0" stop-color="#f6b56b"/>
+        <stop offset="1" stop-color="#fde3b0"/>
+      </linearGradient>
+      <linearGradient id="space" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0" stop-color="#120f2e"/>
+        <stop offset="1" stop-color="#2c2560"/>
+      </linearGradient>
+      <radialGradient id="shine" cx="35%" cy="30%" r="70%">
+        <stop offset="0" stop-color="#fff" stop-opacity=".55"/>
+        <stop offset=".5" stop-color="#fff" stop-opacity="0"/>
+      </radialGradient>
+    </defs>
+  </svg>
+
+  <!-- Buchdeckel / Startseite -->
   <section id="screen-home" class="screen active">
-    <header class="home-head">
-      <h1>Escape-Welten</h1>
-      <p class="sub">Finde Gegenstände, löse Rätsel und entkomme!</p>
-    </header>
-    <div id="world-list" class="card-grid"></div>
-    <footer class="home-foot">
-      <button id="btn-sound" class="pill" type="button"></button>
-      <button id="btn-voice" class="pill" type="button"></button>
-      <button id="btn-reset" class="pill subtle" type="button">Neu anfangen</button>
-    </footer>
+    <div class="cover">
+      <h1 class="cover-title">Escape-Welten</h1>
+      <p class="cover-sub">Ein Rätselbuch zum Entkommen</p>
+      <div id="world-list" class="world-list"></div>
+      <div class="cover-foot">
+        <button id="btn-sound" class="chip" type="button"></button>
+        <button id="btn-voice" class="chip" type="button"></button>
+        <button id="btn-reset" class="chip ghost" type="button">Alles neu</button>
+      </div>
+    </div>
   </section>
 
-  <!-- Weltauswahl -->
+  <!-- Kapitelauswahl einer Welt -->
   <section id="screen-world" class="screen">
     <header class="bar">
-      <button class="round" data-back="home" type="button" aria-label="Zurück">⬅️</button>
+      <button class="iconbtn" data-back="home" type="button" aria-label="Zurück"><span data-icon="back"></span></button>
       <h2 id="world-title"></h2>
-      <span class="spacer"></span>
+      <span class="iconbtn-space"></span>
     </header>
-    <div id="adventure-list" class="card-grid"></div>
+    <div id="adventure-list" class="adventure-list"></div>
   </section>
 
   <!-- Spiel -->
   <section id="screen-game" class="screen">
     <header class="bar">
-      <button class="round" data-back="world" type="button" aria-label="Zurück">⬅️</button>
+      <button class="iconbtn" data-back="world" type="button" aria-label="Zurück"><span data-icon="back"></span></button>
       <h2 id="game-title"></h2>
-      <button id="btn-hint" class="round" type="button" aria-label="Tipp">💡</button>
+      <button id="btn-notes" class="iconbtn" type="button" aria-label="Notizbuch"><span data-icon="notebook"></span><b id="notes-count" class="count" hidden></b></button>
+      <button id="btn-hint" class="iconbtn" type="button" aria-label="Tipp"><span data-icon="bulb"></span></button>
     </header>
     <div class="stage">
-      <div id="scene" class="scene">
-        <div id="darkness" class="darkness"></div>
+      <div id="page" class="page">
+        <div id="scene" class="scene">
+          <div id="scene-bg" class="scene-bg"></div>
+          <div id="objects" class="objects"></div>
+          <div id="darkness" class="darkness"></div>
+          <div class="paper-grain"></div>
+          <div id="page-label" class="page-label"></div>
+        </div>
       </div>
     </div>
     <footer class="hud">
-      <div class="inventory">
-        <span class="inv-label">🎒</span>
+      <div class="backpack">
+        <span class="backpack-icon" data-icon="backpack"></span>
         <div id="inventory" class="inv-items"></div>
       </div>
       <div id="bubble" class="bubble" aria-live="polite">
         <p id="bubble-text"></p>
-        <button id="bubble-say" class="round small" type="button" aria-label="Vorlesen">🔊</button>
+        <button id="bubble-say" class="iconbtn small" type="button" aria-label="Vorlesen"><span data-icon="speaker"></span></button>
       </div>
     </footer>
   </section>
 
   <!-- Rätsel-Fenster -->
   <div id="modal" class="modal" hidden>
-    <div class="modal-card">
-      <button id="modal-close" class="round small close" type="button" aria-label="Schließen">✖️</button>
+    <div class="modal-card paper">
+      <button id="modal-close" class="iconbtn small close" type="button" aria-label="Schließen"><span data-icon="close"></span></button>
       <p id="modal-prompt" class="modal-prompt"></p>
       <div id="modal-body"></div>
     </div>
   </div>
 
+  <!-- Notizbuch -->
+  <div id="notes" class="modal" hidden>
+    <div class="modal-card notebook">
+      <button id="notes-close" class="iconbtn small close" type="button" aria-label="Schließen"><span data-icon="close"></span></button>
+      <h3>Mein Notizbuch</h3>
+      <ul id="notes-list"></ul>
+    </div>
+  </div>
+
   <!-- Gewonnen -->
-  <div id="win" class="modal win" hidden>
-    <div class="modal-card">
-      <div class="win-emoji" id="win-emoji">🏆</div>
+  <div id="win" class="modal" hidden>
+    <div class="modal-card paper win-card">
+      <div class="win-art" id="win-art"></div>
       <h2>Geschafft!</h2>
       <p id="win-text"></p>
       <div class="win-actions">
-        <button id="win-world" class="pill" type="button">Zur Welt</button>
-        <button id="win-next" class="pill primary" type="button">Weiter ➡️</button>
+        <button id="win-world" class="chip" type="button">Zum Kapitel-Menü</button>
+        <button id="win-next" class="chip primary" type="button">Nächstes Abenteuer</button>
       </div>
     </div>
   </div>
 
   <div id="confetti" class="confetti" aria-hidden="true"></div>
 
-  <script src="data.js"></script>
-  <script src="game.js"></script>
+  <script src="engine/art-common.js"></script>
+  <script src="worlds/nordpol.js"></script>
+  <script src="worlds/aegypten.js"></script>
+  <script src="worlds/weltraum.js"></script>
+  <script src="engine/game.js"></script>
 </body>
 </html>

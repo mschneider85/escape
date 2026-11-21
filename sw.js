@@ -1,8 +1,11 @@
 // Bei Änderungen am Spiel VERSION erhöhen, damit iPads die neue Version laden.
-const VERSION = 'v2';
+const VERSION = 'v3';
 const CACHE = 'escape-welten-' + VERSION;
 const FILES = [
-  './', 'index.html', 'style.css', 'data.js', 'game.js', 'manifest.webmanifest',
+  './', 'index.html', 'style.css', 'manifest.webmanifest',
+  'engine/art-common.js', 'engine/game.js',
+  'worlds/nordpol.js', 'worlds/aegypten.js', 'worlds/weltraum.js',
+  'fonts/patrick-hand.woff2', 'fonts/grandstander-800.woff',
   'icons/icon.svg', 'icons/icon-192.png', 'icons/icon-512.png', 'icons/icon-maskable-512.png',
   'icons/apple-touch-icon.png',
 ];

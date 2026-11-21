@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <title>Galerie</title>
+  <link rel="stylesheet" href="../style.css">
+  <style>
+    html, body { overflow: auto; height: auto; }
+    body { padding: 16px; }
+    .grid { display: grid; grid-template-columns: repeat(var(--cols, 3), 1fr); gap: 16px; }
+    .cell { color: #fff; font-size: 18px; }
+    .cell .scene { aspect-ratio: 4/3; height: auto; --u: 1cqw; container-type: inline-size; }
+    .cell .obj[hidden] { display: block !important; opacity: .45; outline: 2px dashed #f0f; }
+    .items { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 16px; }
+    .items div { width: 90px; background: #fbf3e4; border-radius: 12px; padding: 6px; text-align: center; font-size: 13px; }
+  </style>
+</head>
+<body>
+  <!-- gleiche Filter wie im Spiel -->
+  <svg width="0" height="0" style="position:absolute" id="defs-host"></svg>
+  <div class="grid" id="grid"></div>
+  <div class="items" id="items"></div>
+  <script src="../engine/art-common.js"></script>
+  <script src="../worlds/nordpol.js"></script>
+  <script src="../worlds/aegypten.js"></script>
+  <script src="../worlds/weltraum.js"></script>
+  <script>
+    // Filter/Verläufe aus index.html übernehmen
+    fetch('../index.html').then((r) => r.text()).then((html) => {
+      const m = html.match(/<defs>[\s\S]*?<\/defs>/);
+      document.getElementById('defs-host').innerHTML = m[0];
+    });
+    const q = new URLSearchParams(location.search);
+    const world = q.get('w') || 'nordpol';
+    const advFilter = q.get('a');
+    document.body.style.setProperty('--cols', q.get('cols') || 3);
+    const grid = document.getElementById('grid');
+    const w = WORLDS.find((x) => x.id === world);
+    if (!advFilter) {
+      grid.insertAdjacentHTML('beforeend', `<div class="cell">Cover<div class="scene">${art(w.cover)}</div></div>`);
+    }
+    for (const adv of w.adventures) {
+      if (advFilter && adv.id !== advFilter) continue;
+      for (const [pid, p] of Object.entries(adv.pages)) {
+        const objs = p.objects.map((o) => `<div class="obj${o.static ? ' static' : ''}" ${o.hidden ? 'hidden' : ''} style="left:${o.x}%;top:${o.y}%;width:${o.w}%;${o.rot ? `rotate:${o.rot}deg;` : ''}${o.z ? `z-index:${o.z}` : ''}">${art(o.art)}</div>`).join('');
+        const back = p.back ? `<div class="obj" style="left:7%;top:91%;width:9%">${art('nav_left')}</div>` : '';
+        grid.insertAdjacentHTML('beforeend', `<div class="cell">${adv.title} · ${p.name}<div class="scene"><div class="scene-bg">${art(p.bg)}</div><div class="objects">${objs}${back}</div><div class="paper-grain"></div></div></div>`);
+      }
+      const extra = new Set();
+      Object.values(adv.items).forEach((it) => extra.add(it.art));
+      Object.values(adv.pages).forEach((p) => p.objects.forEach((o) => { if (o.become) extra.add(o.become); if (o.puzzle) (o.puzzle.options || []).concat(...(o.puzzle.wheels || [])).forEach((op) => op.art && extra.add(op.art)); }));
+      document.getElementById('items').insertAdjacentHTML('beforeend', [...extra].map((a) => `<div>${art(a)}${a}</div>`).join(''));
+    }
+  </script>
+</body>
+</html>

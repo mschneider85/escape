@@ -1,19 +1,35 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
   <defs>
-    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0" stop-color="#3b5bdb"/><stop offset="1" stop-color="#1d2b53"/>
-    </linearGradient>
-    <linearGradient id="door" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0" stop-color="#ffb35c"/><stop offset="1" stop-color="#e0702a"/>
-    </linearGradient>
+    <filter id="r" x="-5%" y="-5%" width="110%" height="110%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.012" numOctaves="2" seed="5" result="n"/>
+      <feDisplacementMap in="SourceGraphic" in2="n" scale="7" xChannelSelector="R" yChannelSelector="G"/>
+    </filter>
+    <radialGradient id="bg" cx="50%" cy="30%" r="80%">
+      <stop offset="0" stop-color="#4a3766"/>
+      <stop offset="1" stop-color="#241a35"/>
+    </radialGradient>
+    <radialGradient id="glow">
+      <stop offset="0" stop-color="#fff2c2" stop-opacity=".95"/>
+      <stop offset="1" stop-color="#ffd27a" stop-opacity="0"/>
+    </radialGradient>
   </defs>
   <rect width="512" height="512" fill="url(#bg)"/>
-  <circle cx="400" cy="110" r="10" fill="#fff" opacity=".8"/>
-  <circle cx="110" cy="140" r="7" fill="#fff" opacity=".6"/>
-  <circle cx="430" cy="300" r="6" fill="#fff" opacity=".5"/>
-  <path d="M146 440 V200 a110 110 0 0 1 220 0 V440 Z" fill="url(#door)" stroke="#fff" stroke-width="16" stroke-linejoin="round"/>
-  <circle cx="256" cy="290" r="30" fill="#1d2b53"/>
-  <path d="M242 300 h28 l12 70 h-52 Z" fill="#1d2b53"/>
-  <path d="M256 70 l14 30 32 4 -24 22 7 32 -29 -16 -29 16 7 -32 -24 -22 32 -4 Z" fill="#ffd43b" transform="translate(150 20) scale(.6)"/>
-  <rect x="96" y="436" width="320" height="22" rx="11" fill="#fff"/>
+  <g filter="url(#r)" stroke="#3b2c24" stroke-width="9" stroke-linejoin="round" stroke-linecap="round">
+    <circle cx="96" cy="96" r="7" fill="#fff3c4" stroke="none"/>
+    <circle cx="420" cy="120" r="9" fill="#fff3c4" stroke="none"/>
+    <circle cx="440" cy="300" r="5" fill="#fff3c4" stroke="none"/>
+    <!-- offenes Buch -->
+    <path d="M40 410 Q150 370 256 410 Q362 370 472 410 L472 450 Q362 412 256 452 Q150 412 40 450Z" fill="#b07a4f"/>
+    <path d="M60 398 Q160 360 256 398 L256 438 Q160 400 60 436Z" fill="#fbf3e4"/>
+    <path d="M452 398 Q352 360 256 398 L256 438 Q352 400 452 436Z" fill="#f3e5c8"/>
+    <!-- Tür, die aus dem Buch wächst -->
+    <circle cx="256" cy="250" r="190" fill="url(#glow)" stroke="none" opacity=".55"/>
+    <path d="M166 398 L166 200 Q166 100 256 100 Q346 100 346 200 L346 398Z" fill="#e8743b"/>
+    <path d="M190 398 L190 206 Q190 128 256 128 Q322 128 322 206 L322 398Z" fill="#fbf3e4"/>
+    <path d="M190 398 L190 206 Q190 128 256 128 Q322 128 322 206 L322 398Z" fill="#ffe7a6" stroke="none" opacity=".7"/>
+    <circle cx="256" cy="268" r="26" fill="#3b2c24" stroke="none"/>
+    <path d="M244 276 L268 276 L276 336 L236 336Z" fill="#3b2c24" stroke="none"/>
+    <!-- Stern -->
+    <path d="M368 72 L382 104 L416 108 L390 130 L398 164 L368 146 L338 164 L346 130 L320 108 L354 104Z" fill="#f2b544"/>
+  </g>
 </svg>

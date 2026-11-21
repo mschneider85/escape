@@ -1,14 +1,14 @@
 {
   "name": "Escape-Welten",
   "short_name": "Escape-Welten",
-  "description": "Ein Escape-Spiel mit Rätseln für Kinder.",
+  "description": "Ein Escape-Buch zum Spielen: Rätsel für Kinder am Nordpol, in Ägypten und im Weltraum.",
   "lang": "de",
   "start_url": "./",
   "scope": "./",
   "display": "fullscreen",
   "orientation": "any",
-  "background_color": "#1d2b53",
-  "theme_color": "#1d2b53",
+  "background_color": "#241a35",
+  "theme_color": "#241a35",
   "icons": [
     { "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png" },
     { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png" },
