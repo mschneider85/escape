@@ -51,15 +51,17 @@
     <div class="stage">
       <div id="scene" class="scene">
         <div id="darkness" class="darkness"></div>
-        <div id="bubble" class="bubble" hidden>
-          <p id="bubble-text"></p>
-          <button id="bubble-say" class="round small" type="button" aria-label="Vorlesen">🔊</button>
-        </div>
       </div>
     </div>
-    <footer class="inventory">
-      <span class="inv-label">🎒</span>
-      <div id="inventory" class="inv-items"></div>
+    <footer class="hud">
+      <div class="inventory">
+        <span class="inv-label">🎒</span>
+        <div id="inventory" class="inv-items"></div>
+      </div>
+      <div id="bubble" class="bubble" aria-live="polite">
+        <p id="bubble-text"></p>
+        <button id="bubble-say" class="round small" type="button" aria-label="Vorlesen">🔊</button>
+      </div>
     </footer>
   </section>
 

@@ -23,7 +23,7 @@
     if (!save.data.sound) return;
     try {
       audioCtx = audioCtx || new (window.AudioContext || window.webkitAudioContext)();
-      if (audioCtx.state === 'suspended') audioCtx.resume();
+      if (audioCtx.state !== 'running') audioCtx.resume();
       freqs.forEach((f, i) => {
         const t = audioCtx.currentTime + i * gap;
         const o = audioCtx.createOscillator();
@@ -84,6 +84,7 @@
 
   let currentWorld = null;
   let currentAdv = null;
+  let winTimer = null;
   let state = null; // { inv: [], done: Set, removed: Set, revealed: Set, lit: bool, won: bool }
 
   const isDone = (adv) => !!save.data.done[adv.id];
@@ -145,6 +146,8 @@
 
   function startAdventure(adv) {
     currentAdv = adv;
+    clearTimeout(winTimer);
+    closePuzzle();
     state = { inv: [], done: new Set(), removed: new Set(), revealed: new Set(), lit: !adv.dark, won: false };
     $('#game-title').textContent = adv.title;
     scene.style.background = adv.bg;
@@ -168,12 +171,18 @@
       place(el, o.x, o.y, o.s);
       if (o.hidden) el.hidden = true;
       el.addEventListener('click', (ev) => { ev.stopPropagation(); tapObject(o); });
+      el.addEventListener('animationend', (ev) => {
+        if (ev.animationName === 'wiggle' || ev.animationName === 'appearObj') el.classList.remove('wiggle', 'appear');
+      });
       scene.appendChild(el);
       objEls.set(o.id, el);
     });
 
+    darkness.classList.add('instant');
     darkness.classList.toggle('on', !!adv.dark);
     darkness.classList.remove('fade');
+    void darkness.offsetWidth;
+    darkness.classList.remove('instant');
     const glowObj = adv.objects.find((o) => o.glow);
     if (glowObj) {
       darkness.style.setProperty('--lx', glowObj.x + '%');
@@ -195,15 +204,25 @@
 
   function say(text, autoSpeak = true) {
     $('#bubble-text').textContent = text;
-    bubble.hidden = false;
-    // Animation neu starten
-    bubble.style.animation = 'none';
+    bubble.classList.remove('flash');
     void bubble.offsetWidth;
-    bubble.style.animation = '';
+    bubble.classList.add('flash');
     if (save.data.voice && autoSpeak) speak(text);
   }
 
   function itemName(id) { return currentAdv.items[id]?.name || id; }
+
+  // ['kaefer2','kaefer3'] -> "2 × Goldkäfer"; ['glocke'] -> "Glocke"
+  function listItems(ids) {
+    const counts = new Map();
+    ids.forEach((id) => {
+      const it = currentAdv.items[id];
+      const key = it ? `${it.e} ${it.name}` : id;
+      counts.set(key, (counts.get(key) || 0) + 1);
+    });
+    const parts = [...counts].map(([k, n]) => (n > 1 ? `${n} × ${k}` : k));
+    return parts.length > 1 ? parts.slice(0, -1).join(', ') + ' und ' + parts[parts.length - 1] : parts[0];
+  }
 
   function tapObject(o) {
     if (state.won) return;
@@ -222,7 +241,8 @@
       if (missing.length) {
         sfx.bad();
         wiggle(el);
-        say(o.needText || `Dafür brauchst du: ${missing.map(itemName).join(', ')}.`);
+        const hasSome = missing.length < o.needs.length;
+        say(o.needText && !hasSome ? o.needText : `${o.name}: Es fehlt noch ${listItems(missing)}.`);
         return;
       }
     }
@@ -274,7 +294,7 @@
     if (o.give) {
       state.inv.push(o.give);
       sfx.item();
-    } else if (!o.light) {
+    } else if (!o.light && !o.win) {
       sfx.good();
     }
     renderInventory(o.give);
@@ -330,12 +350,6 @@
     say('💡 ' + (h ? h.text : 'Schau dich gut um und tippe alles an!'));
   });
 
-  // Sprechblase schließen: auf die Blase oder eine leere Stelle der Szene tippen
-  bubble.addEventListener('click', () => { bubble.hidden = true; stopSpeaking(); });
-  scene.addEventListener('click', (e) => {
-    if (e.target === scene) bubble.hidden = true;
-  });
-
   $('#bubble-say').addEventListener('click', (e) => {
     e.stopPropagation();
     speak($('#bubble-text').textContent);
@@ -345,9 +359,20 @@
   const modal = $('#modal');
   const modalCard = modal.querySelector('.modal-card');
   let onSolved = null;
+  let puzzleRun = 0;       // jede Rätsel-Öffnung bekommt eine eigene Nummer
+  let puzzleTimer = null;
 
-  function openPuzzle(p, solved) {
-    onSolved = solved;
+  // Verzögert lösen – aber nur, wenn noch dasselbe Rätsel offen ist
+  function solveLater(ms) {
+    const run = puzzleRun;
+    clearTimeout(puzzleTimer);
+    puzzleTimer = setTimeout(() => { if (run === puzzleRun) solved(); }, ms);
+  }
+
+  function openPuzzle(p, solvedCb) {
+    puzzleRun++;
+    clearTimeout(puzzleTimer);
+    onSolved = solvedCb;
     $('#modal-prompt').textContent = p.prompt;
     const body = $('#modal-body');
     body.innerHTML = '';
@@ -359,6 +384,8 @@
   }
 
   function closePuzzle() {
+    puzzleRun++;
+    clearTimeout(puzzleTimer);
     modal.hidden = true;
     onSolved = null;
     stopSpeaking();
@@ -366,7 +393,6 @@
 
   function solved() {
     const cb = onSolved;
-    sfx.good();
     closePuzzle();
     if (cb) cb();
   }
@@ -380,6 +406,7 @@
 
   function buildCode(p, body) {
     let entry = '';
+    let locked = false;
     const disp = document.createElement('div');
     disp.className = 'code-display';
     const draw = () => {
@@ -399,6 +426,7 @@
       b.textContent = k;
       if (k === '✔') b.className = 'ok';
       b.addEventListener('click', () => {
+        if (locked) return;
         if (k === '⌫') { entry = entry.slice(0, -1); sfx.tap(); }
         else if (k === '✔') {
           if (entry === p.answer) return solved();
@@ -409,8 +437,13 @@
           sfx.tap();
           if (entry.length === p.answer.length) {
             draw();
-            if (entry === p.answer) { setTimeout(solved, 250); return; }
-            setTimeout(() => { wrong(); entry = ''; draw(); }, 250);
+            locked = true;
+            if (entry === p.answer) { solveLater(250); return; }
+            const run = puzzleRun;
+            setTimeout(() => {
+              if (run !== puzzleRun) return;
+              wrong(); entry = ''; locked = false; draw();
+            }, 250);
             return;
           }
         }
@@ -428,7 +461,7 @@
       const b = document.createElement('button');
       b.type = 'button';
       b.innerHTML = `<span class="e">${opt.e}</span><span>${opt.label}</span>`;
-      b.addEventListener('click', () => (i === p.answer ? solved() : wrong()));
+      b.addEventListener('click', () => (i === p.answer ? solveLater(0) : wrong()));
       wrap.appendChild(b);
     });
     body.appendChild(wrap);
@@ -450,12 +483,13 @@
       b.type = 'button';
       b.innerHTML = `<span class="e">${opt.e}</span><span>${opt.label}</span>`;
       b.addEventListener('click', () => {
+        if (pos >= p.answer.length) return;
         if (i === p.answer[pos]) {
           slots[pos].textContent = opt.e;
           slots[pos].classList.add('filled');
           pos++;
           tone([440 + pos * 110], 0.12, 'triangle');
-          if (pos === p.answer.length) setTimeout(solved, 350);
+          if (pos === p.answer.length) solveLater(350);
         } else {
           wrong();
           pos = 0;
@@ -486,7 +520,10 @@
     if (!next && allDone) text += ' 🎉 Wow! Du hast ALLE Welten geschafft!';
     else if (!next) text += ` Die Welt ${w.name} ist geschafft!`;
 
-    setTimeout(() => {
+    const wonAdv = currentAdv;
+    clearTimeout(winTimer);
+    winTimer = setTimeout(() => {
+      if (currentAdv !== wonAdv || !$('#screen-game').classList.contains('active')) return;
       $('#win-emoji').textContent = !next ? '🏆' : '⭐';
       $('#win-text').textContent = text;
       $('#win-next').hidden = !next;
@@ -521,6 +558,7 @@
     b.addEventListener('click', () => {
       sfx.tap();
       clearTimeout(hintTimer);
+      clearTimeout(winTimer);
       if (b.dataset.back === 'home') { renderHome(); show('home'); }
       else openWorld(currentWorld);
     });

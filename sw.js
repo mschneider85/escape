@@ -1,9 +1,10 @@
 // Bei Änderungen am Spiel VERSION erhöhen, damit iPads die neue Version laden.
-const VERSION = 'v1';
+const VERSION = 'v2';
 const CACHE = 'escape-welten-' + VERSION;
 const FILES = [
   './', 'index.html', 'style.css', 'data.js', 'game.js', 'manifest.webmanifest',
-  'icons/icon.svg', 'icons/icon-192.png', 'icons/icon-512.png', 'icons/apple-touch-icon.png',
+  'icons/icon.svg', 'icons/icon-192.png', 'icons/icon-512.png', 'icons/icon-maskable-512.png',
+  'icons/apple-touch-icon.png',
 ];
 
 self.addEventListener('install', (e) => {
@@ -20,16 +21,22 @@ self.addEventListener('activate', (e) => {
 
 // Netzwerk zuerst (damit Updates ankommen), offline aus dem Cache.
 self.addEventListener('fetch', (e) => {
-  if (e.request.method !== 'GET') return;
-  e.respondWith(
-    fetch(e.request)
-      .then((res) => {
-        if (res.ok && new URL(e.request.url).origin === location.origin) {
-          const copy = res.clone();
-          caches.open(CACHE).then((c) => c.put(e.request, copy));
-        }
-        return res;
-      })
-      .catch(() => caches.match(e.request, { ignoreSearch: true }).then((r) => r || caches.match('index.html')))
-  );
+  const req = e.request;
+  if (req.method !== 'GET' || new URL(req.url).origin !== location.origin) return;
+  e.respondWith((async () => {
+    try {
+      const res = await fetch(req);
+      if (res.ok) {
+        const copy = res.clone();
+        e.waitUntil(caches.open(CACHE).then((c) => c.put(req, copy)));
+      }
+      return res;
+    } catch (err) {
+      const cached = await caches.match(req, { ignoreSearch: true });
+      if (cached) return cached;
+      // Nur Seitenaufrufe bekommen die Startseite, Bilder usw. nicht.
+      if (req.mode === 'navigate') return caches.match('index.html');
+      return Response.error();
+    }
+  })());
 });

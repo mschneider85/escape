@@ -139,13 +139,18 @@ button {
 }
 
 .scene {
+  /* --u = 1 % der Szenenbreite. Fallback für iPadOS < 16 (ohne Container-Query-Einheiten). */
+  --u: .9vmin;
   position: relative;
   aspect-ratio: 4 / 3;
-  width: min(100%, calc((100dvh - 210px - env(safe-area-inset-top) - env(safe-area-inset-bottom)) * 4 / 3));
+  width: min(100%, calc((100dvh - 260px - env(safe-area-inset-top) - env(safe-area-inset-bottom)) * 4 / 3));
   border-radius: 24px;
   overflow: hidden;
   box-shadow: 0 8px 0 rgba(0,0,0,.3), inset 0 0 0 4px rgba(255,255,255,.25);
-  container-type: size;
+}
+@supports (width: 1cqw) {
+  .stage { container-type: size; }
+  .scene { --u: 1cqw; container-type: size; width: min(100cqw, 133.33cqh); }
 }
 
 .obj {
@@ -154,8 +159,8 @@ button {
   background: none;
   padding: 0;
   line-height: 1;
-  font-size: calc(var(--s, 9) * 1cqw);
-  filter: drop-shadow(0 .4cqw 0 rgba(0,0,0,.25));
+  font-size: calc(var(--s, 9) * var(--u));
+  filter: drop-shadow(0 calc(.4 * var(--u)) 0 rgba(0,0,0,.25));
   transition: transform .15s;
   z-index: 2;
 }
@@ -164,25 +169,12 @@ button {
 .obj.deco { pointer-events: none; z-index: 1; }
 .obj.glow { z-index: 6; animation: glow 1.4s ease-in-out infinite; }
 .obj.wiggle { animation: wiggle .4s; }
-.obj.appear { animation: appear .5s; }
+.obj.appear { animation: appearObj .5s; }
 .obj.gone { animation: gone .35s forwards; pointer-events: none; }
-.obj .tag {
-  position: absolute;
-  left: 50%; top: 100%;
-  transform: translateX(-50%);
-  font-size: 1.9cqw;
-  font-weight: 700;
-  white-space: nowrap;
-  background: rgba(255,255,255,.85);
-  color: var(--ink);
-  padding: .3cqw 1cqw;
-  border-radius: 99px;
-  filter: none;
-}
 
 .darkness {
   position: absolute; inset: 0;
-  background: radial-gradient(circle at var(--lx, 50%) var(--ly, 50%), rgba(10,8,20,.55) 0, rgba(5,4,12,.97) 18cqw);
+  background: radial-gradient(circle at var(--lx, 50%) var(--ly, 50%), rgba(10,8,20,.55) 0, rgba(5,4,12,.97) calc(18 * var(--u)));
   z-index: 5;
   pointer-events: auto;
   transition: opacity 1.2s;
@@ -190,34 +182,19 @@ button {
 }
 .darkness.on { display: block; }
 .darkness.fade { opacity: 0; pointer-events: none; }
+.darkness.instant { transition: none; }
 
-.bubble {
-  position: absolute;
-  left: 3%; right: 3%; bottom: 3%;
-  background: rgba(255,255,255,.97);
-  border-radius: 20px;
-  padding: 2cqw 2.5cqw;
-  display: flex; align-items: center; gap: 2cqw;
-  font-size: clamp(18px, 2.9cqw, 30px);
-  font-weight: 600;
-  box-shadow: 0 6px 0 rgba(0,0,0,.25);
-  z-index: 10;
-  animation: appear .25s;
-}
-.bubble p { margin: 0; flex: 1; line-height: 1.3; }
-.bubble::after {
-  content: '✖';
-  position: absolute; top: .8cqw; right: 1.2cqw;
-  font-size: 1.6cqw; opacity: .35;
-}
-.bubble[hidden] { display: none; }
-
-/* ---------- Inventory ---------- */
-.inventory {
-  display: flex; align-items: center; gap: 12px;
+/* ---------- Leiste unten: Rucksack + Sprechblase ---------- */
+.hud {
+  display: flex; gap: 12px; align-items: stretch;
   margin: 10px 16px 12px;
+  min-height: 104px;
+}
+.inventory {
+  flex: none;
+  display: flex; align-items: center; gap: 12px;
   padding: 8px 16px;
-  min-height: 84px;
+  min-width: 120px;
   border-radius: 24px;
   background: rgba(255,255,255,.14);
   border: 3px dashed rgba(255,255,255,.35);
@@ -233,6 +210,19 @@ button {
   box-shadow: 0 4px 0 rgba(0,0,0,.2);
   animation: pop .5s;
 }
+.bubble {
+  flex: 1;
+  min-width: 0;
+  background: rgba(255,255,255,.97);
+  border-radius: 24px;
+  padding: 10px 14px 10px 20px;
+  display: flex; align-items: center; gap: 12px;
+  font-size: clamp(18px, 2.1vw, 24px);
+  font-weight: 600;
+  box-shadow: 0 5px 0 rgba(0,0,0,.25);
+}
+.bubble.flash { animation: flash .4s; }
+.bubble p { margin: 0; flex: 1; line-height: 1.3; }
 
 /* ---------- Modal ---------- */
 .modal {
@@ -317,9 +307,9 @@ button {
 }
 
 /* ---------- Animationen ---------- */
+@keyframes flash { 0% { transform: scale(.97); background: #fff3c4; } 100% { transform: scale(1); } }
 @keyframes pop { 0% { transform: scale(.2); } 70% { transform: scale(1.2); } 100% { transform: scale(1); } }
 @keyframes appear { from { opacity: 0; transform: translateY(12px) scale(.96); } to { opacity: 1; } }
-.obj.appear { animation: appearObj .5s; }
 @keyframes appearObj { from { opacity: 0; transform: translate(-50%, -50%) scale(.2); } to { opacity: 1; transform: translate(-50%, -50%) scale(1); } }
 @keyframes gone { to { opacity: 0; transform: translate(-50%, -80%) scale(1.4); } }
 @keyframes wiggle {
@@ -328,8 +318,8 @@ button {
   75% { transform: translate(-50%, -50%) rotate(10deg); }
 }
 @keyframes glow {
-  0%, 100% { filter: drop-shadow(0 0 1cqw #ffd36b); }
-  50% { filter: drop-shadow(0 0 3cqw #ffb020); }
+  0%, 100% { filter: drop-shadow(0 0 var(--u) #ffd36b); }
+  50% { filter: drop-shadow(0 0 calc(3 * var(--u)) #ffb020); }
 }
 @keyframes pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.12); } }
 @keyframes shake {
@@ -339,8 +329,12 @@ button {
 @keyframes bounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-14px); } }
 @keyframes fall { to { transform: translateY(110vh) rotate(720deg); } }
 
+@media (max-width: 700px) {
+  .hud { flex-direction: column-reverse; }
+}
+
 @media (max-height: 560px) {
-  .inventory { min-height: 64px; margin: 6px 12px; }
+  .hud { min-height: 70px; margin: 6px 12px; }
   .inv-item { width: 50px; height: 50px; font-size: 30px; }
   .round { width: 48px; height: 48px; font-size: 24px; }
   .bar { padding: 6px 12px; }
