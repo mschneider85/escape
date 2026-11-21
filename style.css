@@ -268,11 +268,19 @@ svg.art .rough-bg { filter: url(#rough-bg); }
 .obj.tap:active { transform: translate(-50%, -50%) scale(.94); }
 .obj.static { pointer-events: none; z-index: 1; }
 .obj.glow { z-index: 6; }
-.obj.glow svg.art { animation: glow 1.6s ease-in-out infinite; }
+.obj.glow::before {
+  content: '';
+  position: absolute; inset: -45%;
+  z-index: -1;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255, 214, 110, .85) 0, rgba(255, 190, 60, .35) 40%, transparent 70%);
+  will-change: opacity, transform;
+  animation: glow 1.6s ease-in-out infinite;
+}
 .obj.wiggle { animation: wiggle .45s; }
 .obj.appear { animation: appearObj .55s; }
 .obj.gone { animation: gone .4s forwards; pointer-events: none; }
-.obj.nav svg.art { animation: nudge 1.8s ease-in-out infinite; }
+.obj.nav svg.art { will-change: transform; animation: nudge 1.8s ease-in-out infinite; }
 
 .darkness {
   position: absolute; inset: 0;
@@ -286,34 +294,35 @@ svg.art .rough-bg { filter: url(#rough-bg); }
 .darkness.instant { transition: none; }
 
 /* ---------- Leben: Atmen & Blinzeln ---------- */
-.obj.alive > svg.art { transform-origin: 50% 100%; animation: breathe 3.8s ease-in-out infinite; animation-delay: var(--breathe-delay, 0s); }
+.obj.alive > svg.art { will-change: transform; animation: breathe 3.8s ease-in-out infinite; animation-delay: var(--breathe-delay, 0s); }
 .obj .eye { transform-box: fill-box; transform-origin: center; }
 .obj.blink .eye { animation: blink .26s ease-in-out; }
-@keyframes breathe { 0%, 100% { transform: scale(1, 1); } 50% { transform: scale(1.012, 1.03); } }
+@keyframes breathe { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(calc(-.35 * var(--u))); } }
 @keyframes blink { 0%, 100% { transform: scaleY(1); } 45%, 60% { transform: scaleY(.1); } }
 
 /* ---------- Stimmungs-Effekte ---------- */
-.fx { position: absolute; inset: 0; z-index: 4; pointer-events: none; overflow: hidden; }
+.fx { position: absolute; inset: 0; z-index: 8; pointer-events: none; overflow: hidden; transition: opacity 1.4s; }
+.fx.dim { opacity: 0; }
 .fx i {
   position: absolute;
   width: calc(var(--s) * var(--u)); height: calc(var(--s) * var(--u));
   border-radius: 50%;
+  will-change: transform, opacity;
   animation: var(--anim) var(--dur) linear infinite;
   animation-delay: var(--delay);
 }
-.fx-snow i { --anim: fx-snow; background: #fff; box-shadow: 0 0 calc(.4 * var(--u)) rgba(255,255,255,.8); opacity: .9; }
-.fx-dust i, .fx-warm i { --anim: fx-float; background: #fff1c4; box-shadow: 0 0 calc(.8 * var(--u)) #ffd77a; opacity: 0; animation-timing-function: ease-in-out; }
-.fx-warm i { background: #fff; }
+.fx-snow i { --anim: fx-snow; background: radial-gradient(circle, #fff 0 45%, rgba(255,255,255,0) 72%); opacity: .95; }
+.fx-dust i, .fx-warm i { --anim: fx-float; background: radial-gradient(circle, #fff1c4 0 30%, rgba(255,215,122,.5) 50%, transparent 72%); opacity: 0; animation-timing-function: ease-in-out; }
+.fx-warm i { background: radial-gradient(circle, #fff 0 30%, rgba(255,240,200,.5) 50%, transparent 72%); }
 .fx-heat i { --anim: fx-drift; background: #f7d8a0; opacity: 0; width: calc(var(--s) * 1.6 * var(--u)); border-radius: 40%; }
 .fx-stars i, .fx-glitter i {
   --anim: fx-twinkle;
   border-radius: 0;
   background: #fff8d6;
   clip-path: polygon(50% 0, 62% 38%, 100% 50%, 62% 62%, 50% 100%, 38% 62%, 0 50%, 38% 38%);
-  filter: drop-shadow(0 0 calc(.6 * var(--u)) #ffe9a6);
   animation-timing-function: ease-in-out;
 }
-.fx-glitter i { background: #e6fbff; filter: drop-shadow(0 0 calc(.6 * var(--u)) #bfefff); }
+.fx-glitter i { background: #e6fbff; }
 .fx-bubbles i {
   --anim: fx-bubble;
   background: radial-gradient(circle at 35% 30%, rgba(255,255,255,.9) 0 18%, transparent 22%), var(--c);
@@ -359,7 +368,7 @@ svg.art .rough-bg { filter: url(#rough-bg); }
 
 .page-label {
   position: absolute; left: 1.6%; top: 2%;
-  z-index: 8;
+  z-index: 9;
   font-size: calc(2.4 * var(--u));
   background: var(--paper);
   border: 2px solid var(--ink);
@@ -525,8 +534,8 @@ svg.art .rough-bg { filter: url(#rough-bg); }
   75% { transform: translate(-50%, -50%) rotate(6deg); }
 }
 @keyframes glow {
-  0%, 100% { filter: drop-shadow(0 0 calc(1 * var(--u)) #ffd36b); }
-  50% { filter: drop-shadow(0 0 calc(3.2 * var(--u)) #ffb020); }
+  0%, 100% { opacity: .45; transform: scale(.85); }
+  50% { opacity: 1; transform: scale(1.05); }
 }
 @keyframes nudge { 0%, 100% { transform: translateX(0); } 50% { transform: translateX(calc(.8 * var(--u))); } }
 @keyframes pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.12) rotate(-6deg); } }

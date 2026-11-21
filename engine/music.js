@@ -78,10 +78,14 @@ function createMusic(getCtx) {
     echo.connect(wet).connect(out);
   }
 
+  // Wie lange ein Ton nach dem Anschlag noch klingt (danach wird der Oszillator beendet)
+  const TAIL = { box: 1.5, pluck: 0.75, glass: 2.3 };
+
   function voice(kind, midi, t, dur, vol) {
     const f = mtof(midi);
     const g = ac.createGain();
     g.connect(out);
+    const end = t + (TAIL[kind] || dur + 0.7) + 0.05;
     const osc = (type, freq, gain = 1) => {
       const o = ac.createOscillator();
       o.type = type;
@@ -90,35 +94,35 @@ function createMusic(getCtx) {
       og.gain.value = gain;
       o.connect(og).connect(g);
       o.start(t);
-      o.stop(t + dur + 3);
+      o.stop(end);
       return o;
     };
     if (kind === 'box') {
       // Spieluhr: Sinus + leiser Oberton, kurzer Anschlag, langes Ausklingen
-      osc('sine', f); osc('sine', f * 2, 0.25); osc('sine', f * 3.01, 0.08);
+      osc('sine', f); osc('sine', f * 2, 0.25);
       g.gain.setValueAtTime(0.0001, t);
       g.gain.exponentialRampToValueAtTime(vol, t + 0.006);
-      g.gain.exponentialRampToValueAtTime(0.0001, t + 1.6);
+      g.gain.exponentialRampToValueAtTime(0.0001, t + 1.5);
     } else if (kind === 'pluck') {
       const lp = ac.createBiquadFilter();
       lp.type = 'lowpass'; lp.frequency.value = 2200; lp.Q.value = 2;
       g.disconnect(); g.connect(lp).connect(out);
-      osc('triangle', f); osc('sawtooth', f, 0.12);
+      osc('triangle', f);
       lp.frequency.setValueAtTime(3200, t);
       lp.frequency.exponentialRampToValueAtTime(700, t + 0.35);
       g.gain.setValueAtTime(0.0001, t);
       g.gain.exponentialRampToValueAtTime(vol, t + 0.004);
-      g.gain.exponentialRampToValueAtTime(0.0001, t + 0.7);
+      g.gain.exponentialRampToValueAtTime(0.0001, t + 0.72);
     } else if (kind === 'glass') {
-      osc('sine', f); osc('triangle', f * 2, 0.06);
+      osc('sine', f);
       g.connect(echo);
       g.gain.setValueAtTime(0.0001, t);
       g.gain.exponentialRampToValueAtTime(vol, t + 0.05);
-      g.gain.exponentialRampToValueAtTime(0.0001, t + 2.4);
+      g.gain.exponentialRampToValueAtTime(0.0001, t + 2.25);
     } else {
       // Flächenklang (Begleitung)
       const type = kind === 'drone' ? 'triangle' : 'sine';
-      osc(type, f); osc('sine', f * 1.005, 0.5);
+      osc(type, f);
       if (kind === 'space') g.connect(echo);
       g.gain.setValueAtTime(0.0001, t);
       g.gain.linearRampToValueAtTime(vol, t + Math.min(0.8, dur * 0.3));
@@ -130,7 +134,7 @@ function createMusic(getCtx) {
   function schedule() {
     const st = STYLES[style];
     const eighth = 60 / st.bpm / 2;
-    while (nextTime < ac.currentTime + 0.5) {
+    while (nextTime < ac.currentTime + 1.2) {
       const loop = Math.floor(step / 32);
       const i = step % 32;
       const phrase = phrases[[0, 0, 1, 0][loop % 4]];
@@ -170,7 +174,7 @@ function createMusic(getCtx) {
     out.gain.setValueAtTime(0.0001, ac.currentTime);
     out.gain.linearRampToValueAtTime(VOLUME, ac.currentTime + 1.5);
     schedule();
-    timer = setInterval(schedule, 120);
+    timer = setInterval(schedule, 250);
   }
 
   function stopNow(fadeOnly) {

@@ -43,7 +43,11 @@
   // ---------- Klang ----------
   let audioCtx = null;
   function ctx() {
-    audioCtx = audioCtx || new (window.AudioContext || window.webkitAudioContext)();
+    if (!audioCtx) {
+      const AC = window.AudioContext || window.webkitAudioContext;
+      // größerer Puffer: Ton reißt nicht ab, wenn das iPad gerade mit Grafik beschäftigt ist
+      try { audioCtx = new AC({ latencyHint: 'playback' }); } catch (e) { audioCtx = new AC(); }
+    }
     if (audioCtx.state !== 'running') audioCtx.resume();
     return audioCtx;
   }
@@ -325,6 +329,7 @@
     const dark = page.dark && !has('lit', state.page);
     darkness.classList.add('instant');
     darkness.classList.toggle('on', !!dark);
+    $('#fx').classList.toggle('dim', !!dark);
     darkness.classList.remove('fade');
     void darkness.offsetWidth;
     darkness.classList.remove('instant');
@@ -469,6 +474,7 @@
     if (o.light) {
       add('lit', state.page);
       darkness.classList.add('fade');
+      $('#fx').classList.remove('dim');
       sfx.light();
     }
     if (o.become) {

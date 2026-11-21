@@ -1,5 +1,5 @@
 // Bei Änderungen am Spiel VERSION erhöhen, damit iPads die neue Version laden.
-const VERSION = 'v5';
+const VERSION = 'v6';
 const CACHE = 'escape-welten-' + VERSION;
 const FILES = [
   './', 'index.html', 'style.css', 'manifest.webmanifest',
