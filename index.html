@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
+  <title>Escape-Welten</title>
+  <meta name="description" content="Ein Escape-Spiel mit Rätseln für Kinder: Nordpol, Ägypten und Waldraum.">
+  <meta name="theme-color" content="#1d2b53">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Escape-Welten">
+  <meta name="format-detection" content="telephone=no">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" href="icons/icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <!-- Startbildschirm -->
+  <section id="screen-home" class="screen active">
+    <header class="home-head">
+      <h1>Escape-Welten</h1>
+      <p class="sub">Finde Gegenstände, löse Rätsel und entkomme!</p>
+    </header>
+    <div id="world-list" class="card-grid"></div>
+    <footer class="home-foot">
+      <button id="btn-sound" class="pill" type="button"></button>
+      <button id="btn-voice" class="pill" type="button"></button>
+      <button id="btn-reset" class="pill subtle" type="button">Neu anfangen</button>
+    </footer>
+  </section>
+
+  <!-- Weltauswahl -->
+  <section id="screen-world" class="screen">
+    <header class="bar">
+      <button class="round" data-back="home" type="button" aria-label="Zurück">⬅️</button>
+      <h2 id="world-title"></h2>
+      <span class="spacer"></span>
+    </header>
+    <div id="adventure-list" class="card-grid"></div>
+  </section>
+
+  <!-- Spiel -->
+  <section id="screen-game" class="screen">
+    <header class="bar">
+      <button class="round" data-back="world" type="button" aria-label="Zurück">⬅️</button>
+      <h2 id="game-title"></h2>
+      <button id="btn-hint" class="round" type="button" aria-label="Tipp">💡</button>
+    </header>
+    <div class="stage">
+      <div id="scene" class="scene">
+        <div id="darkness" class="darkness"></div>
+        <div id="bubble" class="bubble" hidden>
+          <p id="bubble-text"></p>
+          <button id="bubble-say" class="round small" type="button" aria-label="Vorlesen">🔊</button>
+        </div>
+      </div>
+    </div>
+    <footer class="inventory">
+      <span class="inv-label">🎒</span>
+      <div id="inventory" class="inv-items"></div>
+    </footer>
+  </section>
+
+  <!-- Rätsel-Fenster -->
+  <div id="modal" class="modal" hidden>
+    <div class="modal-card">
+      <button id="modal-close" class="round small close" type="button" aria-label="Schließen">✖️</button>
+      <p id="modal-prompt" class="modal-prompt"></p>
+      <div id="modal-body"></div>
+    </div>
+  </div>
+
+  <!-- Gewonnen -->
+  <div id="win" class="modal win" hidden>
+    <div class="modal-card">
+      <div class="win-emoji" id="win-emoji">🏆</div>
+      <h2>Geschafft!</h2>
+      <p id="win-text"></p>
+      <div class="win-actions">
+        <button id="win-world" class="pill" type="button">Zur Welt</button>
+        <button id="win-next" class="pill primary" type="button">Weiter ➡️</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="confetti" class="confetti" aria-hidden="true"></div>
+
+  <script src="data.js"></script>
+  <script src="game.js"></script>
+</body>
+</html>

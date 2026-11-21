@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#3b5bdb"/><stop offset="1" stop-color="#1d2b53"/>
+    </linearGradient>
+    <linearGradient id="door" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#ffb35c"/><stop offset="1" stop-color="#e0702a"/>
+    </linearGradient>
+  </defs>
+  <rect width="512" height="512" fill="url(#bg)"/>
+  <circle cx="400" cy="110" r="10" fill="#fff" opacity=".8"/>
+  <circle cx="110" cy="140" r="7" fill="#fff" opacity=".6"/>
+  <circle cx="430" cy="300" r="6" fill="#fff" opacity=".5"/>
+  <path d="M146 440 V200 a110 110 0 0 1 220 0 V440 Z" fill="url(#door)" stroke="#fff" stroke-width="16" stroke-linejoin="round"/>
+  <circle cx="256" cy="290" r="30" fill="#1d2b53"/>
+  <path d="M242 300 h28 l12 70 h-52 Z" fill="#1d2b53"/>
+  <path d="M256 70 l14 30 32 4 -24 22 7 32 -29 -16 -29 16 7 -32 -24 -22 32 -4 Z" fill="#ffd43b" transform="translate(150 20) scale(.6)"/>
+  <rect x="96" y="436" width="320" height="22" rx="11" fill="#fff"/>
+</svg>
